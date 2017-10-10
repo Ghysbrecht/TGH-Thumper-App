@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Thumper Controller</string>
+    <string name="title_home">Neopixel</string>
+    <string name="title_dashboard">Drive</string>
+    <string name="title_notifications">Settings</string>
+    <string name="infoText">Choose your RGB value and press the button!</string>
+    <string name="title_activity_neopixel">Drive</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
