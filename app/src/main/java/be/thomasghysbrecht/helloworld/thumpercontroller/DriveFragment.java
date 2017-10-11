@@ -1,8 +1,11 @@
 package be.thomasghysbrecht.helloworld.thumpercontroller;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +20,9 @@ public class DriveFragment extends Fragment implements View.OnClickListener {
     private ImageButton upButton, downButton, leftButton, rightButton, hornButton, stopButton;
     private View mView;
     private ThumperController thumperController;
-    private String address = "http://10.1.25.45:3000/";
+    private String address = "";
+    private String port = "";
+    SharedPreferences sharedPreferences;
 
     //Random Stuff
     private static final String ARG_PARAM1 = "param1";
@@ -65,7 +70,17 @@ public class DriveFragment extends Fragment implements View.OnClickListener {
         stopButton = (ImageButton)mView.findViewById(R.id.stopButton);
         stopButton.setOnClickListener(this);
 
-        thumperController = new ThumperController(address);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        address = sharedPreferences.getString((SettingsActivity.NODEJS_SERVER_IP),"10.0.0.1");
+        port =  sharedPreferences.getString((SettingsActivity.NODEJS_SERVER_PORT),"3000");
+        address = "http://"+address+":"+port+"/";
+        String stringMax = sharedPreferences.getString((SettingsActivity.THUMPER_MAX_SPEED),"100");
+        int max = 100;
+        try{
+            max=Integer.parseInt(stringMax);
+        }catch(NumberFormatException ex){}
+
+        thumperController = new ThumperController(address, max);
 
         //return inflater.inflate(R.layout.fragment_drive, container, false);
         return mView;

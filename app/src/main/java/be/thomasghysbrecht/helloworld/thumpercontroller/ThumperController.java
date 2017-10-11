@@ -14,17 +14,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ThumperController {
 
-    private int MAX_SPEED = 50;
+    private int MAX_SPEED = 100;
 
     private Retrofit retrofit;
     private ThumperService thumperService;
 
-    public ThumperController(String address){
+    public ThumperController(String address, int max){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(address)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-
+        MAX_SPEED = max;
         thumperService = retrofit.create(ThumperService.class);
     }
 
@@ -57,8 +57,7 @@ public class ThumperController {
         sendSpeed(MAX_SPEED, MAX_SPEED);
     }
 
-    public void driveBackward(){
-        sendSpeed(MAX_SPEED, MAX_SPEED);
+    public void driveBackward(){ sendSpeed(-MAX_SPEED, -MAX_SPEED);
     }
     public void stop(){
         sendSpeed(0,0);

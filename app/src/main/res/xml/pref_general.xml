@@ -1,0 +1,72 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/pref_nodjs_title">
+
+        <EditTextPreference
+            android:defaultValue="10.0.0.1"
+            android:key="pref_nodjs_ip"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_ip" />
+        <EditTextPreference
+            android:defaultValue="3000"
+            android:key="pref_node_js_port"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_port_name" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_mqtt_group">
+
+        <EditTextPreference
+            android:defaultValue="10.0.0.0"
+            android:key="pref_mqtt_ip"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_title_ip" />
+        <EditTextPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="10.0.0.0"
+            android:key="pref_mqtt_port"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_port_name" />
+        <PreferenceScreen
+            android:summary="@string/pref_mqtt_topics_sum"
+            android:title="@string/pref_mqtt_topics">
+
+            <EditTextPreference
+                android:defaultValue="/thumper/neopixels"
+                android:key="pref_mqtt_neopixels"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:title="@string/pref_mqtt_neopixels_title" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_title_neopixel">
+
+        <EditTextPreference
+            android:defaultValue="0"
+            android:key="pref_neopixel_string_id"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/pref_neopixel_stringid" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/pref_thum_sett_name">
+
+        <EditTextPreference
+            android:defaultValue="100"
+            android:key="thumper_max_speed"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/perf_max_sped_title" />
+    </PreferenceCategory>
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+
+</PreferenceScreen>

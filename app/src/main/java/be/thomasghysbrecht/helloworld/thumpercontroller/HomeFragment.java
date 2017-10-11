@@ -1,8 +1,10 @@
 package be.thomasghysbrecht.helloworld.thumpercontroller;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,13 +30,15 @@ import org.w3c.dom.Text;
 public class HomeFragment extends Fragment implements View.OnClickListener,SeekBar.OnSeekBarChangeListener {
     //All my own Variables and stuff
     private NeopixelsController neopixelsController;
-    private String address = "http://10.1.25.45:3000/";
-    private String pixelId = "0";
+    private String address = "";
+    private String pixelId = "";
+    private String port = "";
     private SeekBar redBar, greenBar, blueBar, delayBar;
     private Switch strobeToggle;
     private Button ledButton;
     private View mView;
     private TextView delayText;
+    SharedPreferences sharedPreferences;
 
     //Random Crap
     private static final String ARG_PARAM1 = "param1";
@@ -79,9 +83,18 @@ public class HomeFragment extends Fragment implements View.OnClickListener,SeekB
         ledButton.setOnClickListener(this);
 
         delayBar.setOnSeekBarChangeListener(this);
+        blueBar.setOnSeekBarChangeListener(this);
+        greenBar.setOnSeekBarChangeListener(this);
+        redBar.setOnSeekBarChangeListener(this);
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        address = sharedPreferences.getString((SettingsActivity.NODEJS_SERVER_IP),"10.0.0.1");
+        port =  sharedPreferences.getString((SettingsActivity.NODEJS_SERVER_PORT),"3000");
+        pixelId = sharedPreferences.getString((SettingsActivity.NEOPIXEL_STRING_ID),"0");
+        address = "http://"+address+":"+port+"/";
 
         neopixelsController = new NeopixelsController(address);
+
         //return inflater.inflate(R.layout.fragment_home, container, false);
         return mView;
     }
@@ -133,6 +146,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener,SeekB
             if (progress < 50)delayBar.setProgress(50);
         }
         delayText.setText(delayBar.getProgress() + " ms");
+        onBasicLedButtonClick();
     }
 
     @Override

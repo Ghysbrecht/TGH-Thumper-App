@@ -2,8 +2,11 @@ package be.thomasghysbrecht.helloworld.thumpercontroller;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.SharedElementCallback;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -28,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private HomeFragment homeFragment = new HomeFragment();
     private DriveFragment driveFragment = new DriveFragment();
-    private SettingsFragment settingsFragment = new SettingsFragment();
+    //private SettingsFragment settingsFragment = new SettingsFragment();
 
     private android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -47,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
                     transaction.replace(R.id.contentFrame, driveFragment).commit();
                     return true;
                 case R.id.navigation_notifications:
-                    transaction.replace(R.id.contentFrame, settingsFragment).commit();
+                    //transaction.replace(R.id.contentFrame, settingsFragment).commit();
+                    startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                     return true;
             }
             return false;
@@ -64,6 +68,11 @@ public class MainActivity extends AppCompatActivity {
 
         android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.contentFrame, homeFragment ).commit();
+
+        //NOT IN USE AN EXAMPLE OF HOW TO USE THE SETTINGS VALUES
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String ip = sharedPreferences.getString(SettingsActivity.NODEJS_SERVER_IP, "Default");
+
     }
 
 }
