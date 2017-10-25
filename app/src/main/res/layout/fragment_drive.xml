@@ -86,4 +86,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/downButton" />
+
+    <TextView
+        android:id="@+id/batteryText"
+        android:layout_width="wrap_content"
+        android:layout_height="20dp"
+        android:layout_marginTop="33dp"
+        android:text="Battery"
+        android:textAlignment="textStart"
+        android:textAllCaps="true"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/downButton" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="25dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:src="@drawable/ic_battery_std_black_24dp"
+        app:layout_constraintStart_toEndOf="@+id/hornButton"
+        app:layout_constraintTop_toBottomOf="@+id/downButton" />
 </android.support.constraint.ConstraintLayout>

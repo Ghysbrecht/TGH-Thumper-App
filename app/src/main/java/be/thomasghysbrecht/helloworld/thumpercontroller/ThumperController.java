@@ -19,6 +19,8 @@ public class ThumperController {
     private Retrofit retrofit;
     private ThumperService thumperService;
 
+    private float thumpVoltage;
+
     public ThumperController(String address, int max){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(address)
@@ -34,12 +36,30 @@ public class ThumperController {
             public void onResponse(Call<ThumperResponse> call, retrofit2.Response<ThumperResponse> response) {
                 if(response.body() != null){
                     Log.e("THUMP","It did work, here is the info: " + response.body().getBatteryVoltage() );
+                    thumpVoltage = response.body().getBatteryVoltage();
                 }
                 else Log.e("THUMP", "No body :(");
             }
 
             @Override
             public void onFailure(Call<ThumperResponse> call, Throwable t) {
+                Log.e("THUMP", "Network error?");
+            }
+        });
+    }
+
+    public void sendNoot(String action){
+        Call<Response> response = thumperService.setBuzzer(new ThumperNoot(action));
+        response.enqueue(new Callback<Response>() {
+            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+                if(response.body() != null){
+                    Log.e("THUMP","It did work, here is the info: " + response.body().getStatus() );
+                }
+                else Log.e("THUMP", "No body :(");
+            }
+
+            @Override
+            public void onFailure(Call<Response> call, Throwable t) {
                 Log.e("THUMP", "Network error?");
             }
         });
@@ -62,4 +82,10 @@ public class ThumperController {
     public void stop(){
         sendSpeed(0,0);
     }
+
+    public float getThumpVoltage(){return thumpVoltage;}
+
+    public void buzzerOn(){ sendNoot("on");}
+    public void buzzerOff(){ sendNoot("off");}
+    public void buzzerToggle(){ sendNoot("toggle");}
 }

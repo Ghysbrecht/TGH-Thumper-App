@@ -1,28 +1,36 @@
 package be.thomasghysbrecht.helloworld.thumpercontroller;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.TextView;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 
-public class DriveFragment extends Fragment implements View.OnClickListener {
+public class DriveFragment extends Fragment implements View.OnTouchListener {
 
     private ImageButton upButton, downButton, leftButton, rightButton, hornButton, stopButton;
     private View mView;
     private ThumperController thumperController;
     private String address = "";
     private String port = "";
+    private int currentCommand;
     SharedPreferences sharedPreferences;
+    Handler handler = new Handler();
+    private TextView batteryText;
 
     //Random Stuff
     private static final String ARG_PARAM1 = "param1";
@@ -58,17 +66,19 @@ public class DriveFragment extends Fragment implements View.OnClickListener {
         mView =  inflater.inflate(R.layout.fragment_drive, container, false);
 
         upButton = (ImageButton)mView.findViewById(R.id.upButton);
-        upButton.setOnClickListener(this);
+        upButton.setOnTouchListener(this);
         downButton = (ImageButton)mView.findViewById(R.id.downButton);
-        downButton.setOnClickListener(this);
+        downButton.setOnTouchListener(this);
         rightButton = (ImageButton)mView.findViewById(R.id.rightButton);
-        rightButton.setOnClickListener(this);
+        rightButton.setOnTouchListener(this);
         leftButton = (ImageButton)mView.findViewById(R.id.leftButton);
-        leftButton.setOnClickListener(this);
+        leftButton.setOnTouchListener(this);
         hornButton = (ImageButton)mView.findViewById(R.id.hornButton);
-        hornButton.setOnClickListener(this);
+        hornButton.setOnTouchListener(this);
         stopButton = (ImageButton)mView.findViewById(R.id.stopButton);
-        stopButton.setOnClickListener(this);
+        stopButton.setOnTouchListener(this);
+
+        batteryText = (TextView)mView.findViewById(R.id.batteryText);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         address = sharedPreferences.getString((SettingsActivity.NODEJS_SERVER_IP),"10.0.0.1");
@@ -114,27 +124,55 @@ public class DriveFragment extends Fragment implements View.OnClickListener {
 
     //Important from this point
     @Override
-    public void onClick(View v){
-        switch(v.getId()){
-            case R.id.upButton:
-                thumperController.driveForward();
-                break;
-            case R.id.rightButton:
-                thumperController.goRight();
-                break;
-            case R.id.leftButton:
-                thumperController.goLeft();
-                break;
-            case R.id.downButton:
-                thumperController.driveBackward();
-                break;
-            case R.id.stopButton:
-                thumperController.stop();
-                break;
-            case R.id.hornButton:
-                break;
+    public boolean onTouch(View v, MotionEvent event){
+        currentCommand = v.getId();
+
+        if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
+            switch(currentCommand){
+                case R.id.hornButton:
+                    thumperController.buzzerOn();
+                    break;
+                case R.id.stopButton:
+                    thumperController.stop();
+                    break;
+                default:
+                    handler.post(periodicSend);
+                    break;
+            }
+        } else if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+            if(currentCommand == R.id.hornButton) thumperController.buzzerOff();
+            currentCommand = R.id.stopButton;
+            handler.removeCallbacks(periodicSend);
+            thumperController.stop();
         }
+        batteryText.setText(Float.toString(thumperController.getThumpVoltage()) + "v");
+        return true;
     }
+
+    private Runnable periodicSend = new Runnable() {
+        @Override
+        public void run() {
+            switch(currentCommand){
+                case R.id.upButton:
+                    thumperController.driveForward();
+                    break;
+                case R.id.rightButton:
+                    thumperController.goRight();
+                    break;
+                case R.id.leftButton:
+                    thumperController.goLeft();
+                    break;
+                case R.id.downButton:
+                    thumperController.driveBackward();
+                    break;
+                case R.id.stopButton:
+                    thumperController.stop();
+                    break;
+            }
+            handler.postDelayed(this, 100);
+            batteryText.setText(Float.toString(thumperController.getThumpVoltage()) + "v");
+        }
+    };
 
 
 }

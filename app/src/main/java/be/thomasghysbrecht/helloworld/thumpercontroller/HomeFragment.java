@@ -146,12 +146,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener,SeekB
             if (progress < 50)delayBar.setProgress(50);
         }
         delayText.setText(delayBar.getProgress() + " ms");
-        onBasicLedButtonClick();
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar){}
+
     @Override
-    public void onStopTrackingTouch(SeekBar seekBar){}
+    public void onStopTrackingTouch(SeekBar seekBar){
+        onBasicLedButtonClick();
+    }
 
 }

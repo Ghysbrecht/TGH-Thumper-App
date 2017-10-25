@@ -22,4 +22,5 @@
     <string name="pref_mqtt_topics_sum">Change MQTT topics</string>
     <string name="pref_thum_sett_name">Thumper</string>
     <string name="perf_max_sped_title">Max speed</string>
+    <string name="settings_fragment_title">Current settings</string>
 </resources>

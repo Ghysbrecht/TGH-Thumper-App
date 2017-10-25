@@ -11,4 +11,7 @@ import retrofit2.http.POST;
 public interface ThumperService {
     @POST("speed")
     Call<ThumperResponse> setSpeed(@Body ThumperSpeed speed);
+
+    @POST("alarm")
+    Call<Response> setBuzzer(@Body ThumperNoot noot);
 }

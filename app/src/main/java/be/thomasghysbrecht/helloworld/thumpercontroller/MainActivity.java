@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
     private HomeFragment homeFragment = new HomeFragment();
     private DriveFragment driveFragment = new DriveFragment();
-    //private SettingsFragment settingsFragment = new SettingsFragment();
+    private SettingsFragment settingsFragment = new SettingsFragment();
 
     private android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
                     transaction.replace(R.id.contentFrame, driveFragment).commit();
                     return true;
                 case R.id.navigation_notifications:
-                    //transaction.replace(R.id.contentFrame, settingsFragment).commit();
-                    startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                    transaction.replace(R.id.contentFrame, settingsFragment).commit();
                     return true;
             }
             return false;
@@ -74,5 +73,6 @@ public class MainActivity extends AppCompatActivity {
         String ip = sharedPreferences.getString(SettingsActivity.NODEJS_SERVER_IP, "Default");
 
     }
+
 
 }
