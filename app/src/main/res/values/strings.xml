@@ -23,4 +23,5 @@
     <string name="pref_thum_sett_name">Thumper</string>
     <string name="perf_max_sped_title">Max speed</string>
     <string name="settings_fragment_title">Current settings</string>
+    <string name="third_option">Touch</string>
 </resources>

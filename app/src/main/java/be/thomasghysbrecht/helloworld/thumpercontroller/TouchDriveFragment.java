@@ -20,17 +20,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 
-public class DriveFragment extends Fragment implements View.OnTouchListener {
+public class TouchDriveFragment extends Fragment implements View.OnTouchListener {
 
-    private ImageButton upButton, downButton, leftButton, rightButton, hornButton, stopButton;
     private View mView;
     private ThumperController thumperController;
     private String address = "";
     private String port = "";
-    private int currentCommand;
     SharedPreferences sharedPreferences;
     Handler handler = new Handler();
-    private TextView batteryText;
+
+    private float X_MIN = 180;
+    private float X_MAX = 580;
+    private float Y_MIN = 240;
+    private float Y_MAX = 640;
+    private float DEADZONE = 30; //NOT YET IMPLEMENTED
+
+    private float rightPerc, leftPerc;
 
     //Random Stuff
     private static final String ARG_PARAM1 = "param1";
@@ -38,10 +43,10 @@ public class DriveFragment extends Fragment implements View.OnTouchListener {
     private String mParam1;
     private String mParam2;
     private OnFragmentInteractionListener mListener;
-    public DriveFragment() {}
+    public TouchDriveFragment() {}
 
-    public static DriveFragment newInstance(String param1, String param2) {
-        DriveFragment fragment = new DriveFragment();
+    public static TouchDriveFragment newInstance(String param1, String param2) {
+        TouchDriveFragment fragment = new TouchDriveFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -63,22 +68,10 @@ public class DriveFragment extends Fragment implements View.OnTouchListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mView =  inflater.inflate(R.layout.fragment_drive, container, false);
+        mView =  inflater.inflate(R.layout.fragment_touch_drive, container, false);
 
-        upButton = (ImageButton)mView.findViewById(R.id.upButton);
-        upButton.setOnTouchListener(this);
-        downButton = (ImageButton)mView.findViewById(R.id.downButton);
-        downButton.setOnTouchListener(this);
-        rightButton = (ImageButton)mView.findViewById(R.id.rightButton);
-        rightButton.setOnTouchListener(this);
-        leftButton = (ImageButton)mView.findViewById(R.id.leftButton);
-        leftButton.setOnTouchListener(this);
-        hornButton = (ImageButton)mView.findViewById(R.id.hornButton);
-        hornButton.setOnTouchListener(this);
-        stopButton = (ImageButton)mView.findViewById(R.id.stopButton);
-        stopButton.setOnTouchListener(this);
+        mView.setOnTouchListener(this);
 
-        batteryText = (TextView)mView.findViewById(R.id.batteryText);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         address = sharedPreferences.getString((SettingsActivity.NODEJS_SERVER_IP),"10.0.0.1");
@@ -124,54 +117,58 @@ public class DriveFragment extends Fragment implements View.OnTouchListener {
     //Important from this point
     @Override
     public boolean onTouch(View v, MotionEvent event){
-        currentCommand = v.getId();
+        float currentX = event.getX();
+        float currentY = event.getY();
+        float percX = getPercentage(X_MIN,X_MAX,currentX);
+        float percY = -1 * getPercentage(Y_MIN,Y_MAX,currentY);
+        leftPerc = calcLeftTirePerc(percX, percY);
+        rightPerc = calcRightTirePerc(percX,percY);
+
+        Log.e("THUMP","Touched! Coordinates: X: " + currentX + " Y: " + currentY);
+        Log.e("THUMP","Touched! Percentages: X: " + percX + " Y: " + percY);
+        Log.e("THUMP","Touched! Tire Percen: L: " + leftPerc + " R: " + rightPerc);
 
         if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
-            switch(currentCommand){
-                case R.id.hornButton:
-                    thumperController.buzzerOn();
-                    break;
-                case R.id.stopButton:
-                    thumperController.stop();
-                    break;
-                default:
-                    handler.post(periodicSend);
-                    break;
-            }
+            handler.post(periodicSend);
         } else if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
-            if(currentCommand == R.id.hornButton) thumperController.buzzerOff();
-            currentCommand = R.id.stopButton;
             handler.removeCallbacks(periodicSend);
             thumperController.stop();
         }
-        batteryText.setText(Float.toString(thumperController.getThumpVoltage()) + "v");
+
         return true;
     }
 
     private Runnable periodicSend = new Runnable() {
         @Override
         public void run() {
-            switch(currentCommand){
-                case R.id.upButton:
-                    thumperController.driveForward();
-                    break;
-                case R.id.rightButton:
-                    thumperController.goRight();
-                    break;
-                case R.id.leftButton:
-                    thumperController.goLeft();
-                    break;
-                case R.id.downButton:
-                    thumperController.driveBackward();
-                    break;
-                case R.id.stopButton:
-                    thumperController.stop();
-                    break;
-            }
+            thumperController.drivePercentages(leftPerc, rightPerc);
             handler.postDelayed(this, 100);
-            batteryText.setText(Float.toString(thumperController.getThumpVoltage()) + "v");
         }
     };
 
+
+    public float getPercentage(float minVal, float maxVal, float curVal){
+        if(curVal<minVal)curVal = minVal;
+        if(curVal>maxVal)curVal = maxVal;
+        return (float) ((((curVal-minVal)/(maxVal-minVal))-0.5)*2);
+    }
+
+    public float calcLeftTirePerc(float xPercentage, float yPercentage){
+        if(xPercentage > 0) xPercentage = 0;
+        else xPercentage = -1 * xPercentage;
+        //Now we have a value between 0 and 1 that says how hard we are turning left
+        xPercentage = (float)(-1 * (xPercentage - 0.5)*2.0); // 1 = no left turn, -1 = hard left turn
+
+        return yPercentage * xPercentage;
+    }
+
+    public float calcRightTirePerc(float xPercentage, float yPercentage){
+        if(xPercentage < 0) xPercentage = 0;
+        else xPercentage = xPercentage;
+        //Now we have a value between 0 and 1 that says how hard we are turning left
+        xPercentage = (float)(-1 * (xPercentage - 0.5)*2.0); // 1 = no left turn, -1 = hard left turn
+
+        return yPercentage * xPercentage;
+    }
 
 }

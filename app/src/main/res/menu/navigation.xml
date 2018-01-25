@@ -8,6 +8,11 @@
 
     <item
         android:id="@+id/navigation_dashboard"
+        android:icon="@drawable/ic_fingerprint_black_24dp"
+        android:title="@string/third_option" />
+
+    <item
+        android:id="@+id/navigation_buttondrive"
         android:icon="@drawable/ic_airport_shuttle_black_24dp"
         android:title="@string/title_dashboard" />
 

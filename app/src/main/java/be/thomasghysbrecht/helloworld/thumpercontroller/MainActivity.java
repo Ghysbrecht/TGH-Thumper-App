@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private HomeFragment homeFragment = new HomeFragment();
     private DriveFragment driveFragment = new DriveFragment();
     private SettingsFragment settingsFragment = new SettingsFragment();
+    private TouchDriveFragment touchDriveFragment = new TouchDriveFragment();
+    private DriveFragment buttonDriveFragment = new DriveFragment();
 
     private android.support.v4.app.FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -47,10 +49,13 @@ public class MainActivity extends AppCompatActivity {
                     transaction.replace(R.id.contentFrame, homeFragment ).commit();
                     return true;
                 case R.id.navigation_dashboard:
-                    transaction.replace(R.id.contentFrame, driveFragment).commit();
+                    transaction.replace(R.id.contentFrame, touchDriveFragment).commit();
                     return true;
                 case R.id.navigation_notifications:
                     transaction.replace(R.id.contentFrame, settingsFragment).commit();
+                    return true;
+                case R.id.navigation_buttondrive:
+                    transaction.replace(R.id.contentFrame, buttonDriveFragment).commit();
                     return true;
             }
             return false;
@@ -67,10 +72,6 @@ public class MainActivity extends AppCompatActivity {
 
         android.support.v4.app.FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.contentFrame, homeFragment ).commit();
-
-        //NOT IN USE AN EXAMPLE OF HOW TO USE THE SETTINGS VALUES
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String ip = sharedPreferences.getString(SettingsActivity.NODEJS_SERVER_IP, "Default");
 
     }
 
