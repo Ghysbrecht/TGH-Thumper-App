@@ -2,6 +2,7 @@ package be.thomasghysbrecht.helloworld.thumpercontroller;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -37,7 +38,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener,SeekB
     private Switch strobeToggle;
     private Button ledButton;
     private View mView;
-    private TextView delayText;
+    private TextView delayText, colorText;
     SharedPreferences sharedPreferences;
 
     //Random Crap
@@ -78,6 +79,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener,SeekB
         delayBar = ((SeekBar)mView.findViewById(R.id.delayBar));
         strobeToggle = ((Switch)mView.findViewById(R.id.strobeToggle));
         delayText = ((TextView)mView.findViewById(R.id.delayText));
+        colorText = ((TextView)mView.findViewById(R.id.colorText));
 
         ledButton = (Button)mView.findViewById(R.id.sendLedButton);
         ledButton.setOnClickListener(this);
@@ -142,6 +144,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener,SeekB
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        setColorText();
         if (seekBar == delayBar) {
             if (progress < 50)delayBar.setProgress(50);
         }
@@ -154,6 +157,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener,SeekB
     @Override
     public void onStopTrackingTouch(SeekBar seekBar){
         onBasicLedButtonClick();
+    }
+
+    public void setColorText(){
+        colorText.setTextColor(Color.rgb(redBar.getProgress(),greenBar.getProgress(),blueBar.getProgress()));
     }
 
 }
