@@ -13,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.concurrent.ExecutorService;
@@ -23,6 +24,7 @@ import java.util.concurrent.Future;
 public class TouchDriveFragment extends Fragment implements View.OnTouchListener {
 
     private View mView;
+    private ProgressBar leftProgBar, rightProgBar;
     private ThumperController thumperController;
     private String address = "";
     private String port = "";
@@ -71,6 +73,16 @@ public class TouchDriveFragment extends Fragment implements View.OnTouchListener
         mView =  inflater.inflate(R.layout.fragment_touch_drive, container, false);
 
         mView.setOnTouchListener(this);
+
+        leftProgBar = mView.findViewById(R.id.leftProgBar);
+        rightProgBar = mView.findViewById(R.id.rightProgBar);
+
+        leftProgBar.setProgress(50);
+        leftProgBar.setMax(100);
+        leftProgBar.setIndeterminate(false);
+        rightProgBar.setProgress(50);
+        rightProgBar.setMax(100);
+        rightProgBar.setIndeterminate(false);
 
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -124,6 +136,9 @@ public class TouchDriveFragment extends Fragment implements View.OnTouchListener
         leftPerc = calcLeftTirePerc(percX, percY);
         rightPerc = calcRightTirePerc(percX,percY);
 
+        rightProgBar.setProgress((int)(((rightPerc / 2.0) + 0.5) * 100));
+        leftProgBar.setProgress((int)(((leftPerc / 2.0) + 0.5) * 100));
+
         Log.e("THUMP","Touched! Coordinates: X: " + currentX + " Y: " + currentY);
         Log.e("THUMP","Touched! Percentages: X: " + percX + " Y: " + percY);
         Log.e("THUMP","Touched! Tire Percen: L: " + leftPerc + " R: " + rightPerc);
@@ -131,6 +146,8 @@ public class TouchDriveFragment extends Fragment implements View.OnTouchListener
         if (event.getAction() == android.view.MotionEvent.ACTION_DOWN) {
             handler.post(periodicSend);
         } else if (event.getAction() == android.view.MotionEvent.ACTION_UP) {
+            rightProgBar.setProgress(50);
+            leftProgBar.setProgress(50);
             handler.removeCallbacks(periodicSend);
             thumperController.stop();
         }
